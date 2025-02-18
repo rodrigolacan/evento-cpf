@@ -1,91 +1,22 @@
 <template>
-  <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
+  <div class="flex flex-col min-h-screen">
+    <!-- Navbar -->
+    <nav class="flex-no-wrap relative flex w-full items-center justify-between bg-gradient-to-r from-blue-600 to-blue-500 py-4 shadow-lg">
+      <div class="flex w-full flex-wrap items-center justify-between px-6">
+        <!-- Logo or Brand Name -->
+        <div class="flex items-center">
+          <!-- You can add a logo here if you have one -->
+          <!-- <img src="path/to/logo.png" alt="Sebrae Logo" class="h-10 w-10 mr-2"> -->
+          <span class="text-white text-2xl font-bold tracking-wide">Sebrae</span>
+        </div>
+      </div>
+    </nav>
 
-    <!-- (Optional) The Header -->
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn
-          flat
-          round
-          dense
-          icon="menu"
-          @click="leftDrawer = !leftDrawer"
-        />
-        <q-toolbar-title>
-          Header
-        </q-toolbar-title>
-      </q-toolbar>
-
-      <q-tabs>
-        <q-route-tab
-          icon="map"
-          to="/your/route"
-          replace
-          label="One Tab"
-        />
-        <q-route-tab
-          icon="assignment"
-          to="/some/other/route"
-          replace
-          label="Other Tab"
-        />
-      </q-tabs>
-    </q-header>
-
-    <!-- (Optional) The Footer -->
-    <q-footer>
-      <q-tabs switch-indicator>
-        <q-route-tab
-          icon="map"
-          to="/your/route"
-          replace
-          label="One Tab"
-        />
-        <q-route-tab
-          icon="assignment"
-          to="/some/other/route"
-          replace
-          label="Other Tab"
-        />
-      </q-tabs>
-
-      <q-toolbar>
-        <q-btn
-          flat
-          round
-          dense
-          icon="menu"
-          @click="leftDrawer = !leftDrawer"
-        />
-        <q-toolbar-title>
-          Footer
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-footer>
-
-    <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
-    <q-drawer
-      v-model="leftDrawer"
-      side="left"
-      bordered
-      content-class="bg-grey-2"
-    >
-      <!-- QScrollArea is optional -->
-      <q-scroll-area class="fit q-pa-sm">
-        <!-- Content here -->
-      </q-scroll-area>
-    </q-drawer>
-
-    <q-page-container>
-      <!-- This is where pages get injected -->
+    <!-- Conteúdo -->
+    <main class="flex-1 flex justify-center items-center">
       <router-view />
-    </q-page-container>
-
-  </q-layout>
+    </main>
+  </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-
-const leftDrawer = ref(false);
-</script>
+<script setup lang="ts"></script>
