@@ -1,102 +1,91 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh Lpr fFf"> <!-- Be sure to play with the Layout demo on docs -->
+
+    <!-- (Optional) The Header -->
     <q-header elevated>
       <q-toolbar>
         <q-btn
           flat
-          dense
           round
+          dense
           icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
+          @click="leftDrawer = !leftDrawer"
         />
-
         <q-toolbar-title>
-          Quasar App
+          Header
         </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
+
+      <q-tabs>
+        <q-route-tab
+          icon="map"
+          to="/your/route"
+          replace
+          label="One Tab"
+        />
+        <q-route-tab
+          icon="assignment"
+          to="/some/other/route"
+          replace
+          label="Other Tab"
+        />
+      </q-tabs>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
+    <!-- (Optional) The Footer -->
+    <q-footer>
+      <q-tabs switch-indicator>
+        <q-route-tab
+          icon="map"
+          to="/your/route"
+          replace
+          label="One Tab"
         />
-      </q-list>
+        <q-route-tab
+          icon="assignment"
+          to="/some/other/route"
+          replace
+          label="Other Tab"
+        />
+      </q-tabs>
+
+      <q-toolbar>
+        <q-btn
+          flat
+          round
+          dense
+          icon="menu"
+          @click="leftDrawer = !leftDrawer"
+        />
+        <q-toolbar-title>
+          Footer
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-footer>
+
+    <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
+    <q-drawer
+      v-model="leftDrawer"
+      side="left"
+      bordered
+      content-class="bg-grey-2"
+    >
+      <!-- QScrollArea is optional -->
+      <q-scroll-area class="fit q-pa-sm">
+        <!-- Content here -->
+      </q-scroll-area>
     </q-drawer>
 
     <q-page-container>
+      <!-- This is where pages get injected -->
       <router-view />
     </q-page-container>
+
   </q-layout>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
 
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-];
-
-const leftDrawerOpen = ref(false);
-
-function toggleLeftDrawer () {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
-}
+const leftDrawer = ref(false);
 </script>
