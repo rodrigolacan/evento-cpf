@@ -1,8 +1,9 @@
 <template>
-   <h1 class="text-4xl font-bold">    Hello world!  </h1>
-
+  <InputCPF></InputCPF>
 </template>
 
 <script setup lang="ts">
+import InputCPF from 'src/components/vcards/inputCPF.vue';
+
 
 </script>
