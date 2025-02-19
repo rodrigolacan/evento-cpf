@@ -12,12 +12,17 @@
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build",
-    "postinstall": "quasar prepare"
+    "postinstall": "quasar prepare",
+    "start:proxy": "node proxy.js",
+    "start": "npm run start:proxy & quasar dev"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
     "@tailwindcss/postcss": "^4.0.7",
     "axios": "^1.2.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "http-proxy-middleware": "^3.0.3",
     "quasar": "^2.16.0",
     "vue": "^3.4.18",
     "vue-router": "^4.0.12"
