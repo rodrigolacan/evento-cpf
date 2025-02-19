@@ -26,6 +26,7 @@
     "http-proxy-middleware": "^3.0.3",
     "quasar": "^2.16.0",
     "vue": "^3.4.18",
+    "vue-qr": "^4.0.9",
     "vue-router": "^4.0.12"
   },
   "devDependencies": {
