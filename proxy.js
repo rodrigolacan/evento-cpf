@@ -1,10 +1,12 @@
 import express from 'express'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 import cors from 'cors'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const app = express()
 const PORT = 8000
-const API_KEY = import.meta.env.VITE_API_KEY
+const API_KEY = process.env.API_KEY;
 
 app.use(cors())
 
