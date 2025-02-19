@@ -13,7 +13,7 @@ app.use(cors())
 app.use(
   '/api',
   createProxyMiddleware({
-    target: 'https://homolog-sas.sebrae.com.br/SasServiceCliente/Cliente',
+    target: 'https://sas.sebrae.com.br/SasServiceCliente/Cliente',
     changeOrigin: true,
     timeout: 10000, 
     onProxyReq: (proxyReq, req, res) => {
