@@ -1,5 +1,4 @@
-import { ref } from 'vue'
-import type { PessoaFisicaDTO } from '../src/components/pessoaFisica'
+import type { PessoaFisicaDTO } from 'components/pessoaFisica'
 import { api } from 'src/boot/axios'
 
 //Buscar dados pelo CPF

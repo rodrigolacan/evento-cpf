@@ -71,8 +71,8 @@
 
 <script setup lang="ts">
 import { ref, watch, computed, getCurrentInstance } from 'vue'
-import { fetchPessoaFisicaByCpf } from 'app/services/api'
-import { generateVcardsPessoaFisica } from 'app/services/vCards'
+import { fetchPessoaFisicaByCpf } from 'src/services/api'
+import { generateVcardsPessoaFisica } from 'src/services/vCards'
 import type { PessoaFisicaDTO } from '../pessoaFisica'
 import vueQr from 'vue-qr/src/packages/vue-qr.vue'
 
