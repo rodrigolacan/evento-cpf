@@ -6,19 +6,23 @@ dotenv.config()
 
 const app = express()
 const PORT = 8000
-const API_KEY = process.env.API_KEY;
+const API_KEY = process.env.API_KEY
 
- app.use(cors({
-     origin: '*',
-     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-     allowedHeaders: ['Content-Type', 'Authorization', 'x-req']
-   }));
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-req'],
+    preflightContinue: false, // Garante que o middleware CORS lide com OPTIONS
+  }),
+)
+
 app.use(
   '/api',
   createProxyMiddleware({
     target: 'https://sas.sebrae.com.br/SasServiceCliente/Cliente',
     changeOrigin: true,
-    timeout: 10000, 
+    timeout: 10000,
     onProxyReq: (proxyReq, req, res) => {
       proxyReq.setHeader('x-req', API_KEY)
       proxyReq.setHeader('Accept', 'application/json')
