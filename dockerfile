@@ -28,6 +28,9 @@ COPY --from=node_build /app/dist/spa /usr/share/nginx/html
 # Copiar proxy e dependências
 COPY --from=proxy_build /proxy /proxy
 
+# Copiar o arquivo de configuração personalizado do Nginx
+COPY docker/default.conf /etc/nginx/conf.d/default.conf
+
 # Instalar Node.js no Alpine (para rodar proxy.js)
 RUN apk add --no-cache nodejs npm
 
