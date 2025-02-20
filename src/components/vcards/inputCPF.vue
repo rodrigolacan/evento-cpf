@@ -11,6 +11,14 @@
         maxlength="14"
         class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
       />
+      <div class="flex justify-center mt-4">
+          <button
+            @click="buscarCpf(cpf)"
+            class="bg-blue-500 text-white cursor-pointer font-semibold px-6 py-2 rounded-lg shadow hover:bg-blue-600 transition-colors duration-200"
+          >
+            Buscar
+          </button>
+      </div>
     </div>
   </div>
 
@@ -63,86 +71,35 @@
 
 <script setup lang="ts">
 import { ref, watch, computed, getCurrentInstance } from 'vue'
+import { fetchPessoaFisicaByCpf } from 'app/services/api'
+import { generateVcardsPessoaFisica } from 'app/services/vCards'
 import type { PessoaFisicaDTO } from '../pessoaFisica'
 import vueQr from 'vue-qr/src/packages/vue-qr.vue'
 
 const instance = getCurrentInstance()
 const masks = instance?.appContext.config.globalProperties?.$masks
-const axios = instance?.appContext.config.globalProperties?.$api
-const isLoading = ref<boolean>(false)
 const cpf = ref<string>('')
 const showModal = ref<boolean>(false)
 const responseData = ref<PessoaFisicaDTO | null>(null)
-let timeoutId: ReturnType<typeof setTimeout> | null = null
 
-const qrData = computed(() => {
-  if (!responseData.value) return ''
+const qrData = computed(() => generateVcardsPessoaFisica(responseData.value))
 
-  const nome = responseData.value.NomeRazaoSocial || 'Contato Desconhecido'
-  const cpf = responseData.value.CgcCpf.toString().padStart(11, '0')
-  const telefones =
-    responseData.value.ListaInformacoesContato?.map((c) => `TEL;TYPE=CELL:${c.Numero}`).join(
-      '\n',
-    ) || 'TEL;TYPE=CELL:00000000000'
 
-  // Separando nome e sobrenome (caso haja)
-  const [primeiroNome, ...resto] = nome.split(' ')
-  const sobrenome = resto.join(' ') || ' '
-
-  // Criando o vCard corretamente formatado
-  const vCard = `
-BEGIN:VCARD
-VERSION:3.0
-N:${sobrenome};${primeiroNome};;;
-FN:${nome}
-ORG:Sebrae
-${telefones}
-X-CPF: ${cpf}
-END:VCARD
-  `.trim()
-
-  return vCard
-})
-console.log(cpf)
-
-//Buscar dados pelo CPF
-const buscarDadosCPF = async (newCpf: string) => {
-  isLoading.value = true
-  try {
-    const cpfSemMascara = newCpf.replace(/\D/g, '')
-    console.log(cpfSemMascara)
-    const response = await axios.get('SelecionarPessoaFisica', {
-      params: {
-        CgcCpf: cpfSemMascara,
-      },
-      headers: {
-        'x-req': import.meta.env.VITE_API_KEY,
-      },
-    })
-    responseData.value = response.data
-    showModal.value = true
-  } catch (error) {
-    console.error('Erro na requisição:', error)
-    instance?.appContext.config.globalProperties?.$q.notify({
-      type: 'negative',
-      message: 'Erro ao buscar os dados do CPF.',
-    })
-  } finally {
-    isLoading.value = false
-  }
+async function buscarCpf(cpfInput: string){
+  responseData.value = await fetchPessoaFisicaByCpf(cpfInput) ?? null
+  showModal.value = true
 }
 
-watch(cpf, (newCpf) => {
+watch(cpf, async (newCpf) => {
   if (masks) {
     cpf.value = masks.cpf(newCpf)
+
+    if(cpf.value.length == 14){
+      await buscarCpf(newCpf)
+    }
+
+    
   }
 
-  if (timeoutId) {
-    clearTimeout(timeoutId)
-  }
-
-  timeoutId = setTimeout(() => {
-    void buscarDadosCPF(newCpf)
-  }, 2000)
 })
 </script>
