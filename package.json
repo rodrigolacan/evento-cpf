@@ -2,7 +2,7 @@
   "name": "evento-cpf",
   "version": "0.0.1",
   "description": "Projeto para retornar os dados do SAS em QRCODE",
-  "productName": "Quasar App",
+  "productName": "Consulta Evento",
   "author": "Rodrigo Lacan <rodrigo.lacan@rr.sebrae.com.br>",
   "type": "module",
   "private": true,
