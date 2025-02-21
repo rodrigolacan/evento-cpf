@@ -132,6 +132,8 @@ import { fetchPessoaFisicaByCpf } from 'src/services/api'
 import { generateVcardsPessoaFisica } from 'src/services/vCards'
 import type { PessoaFisicaDTO, InformacaoContato } from '../pessoaFisica'
 import vueQr from 'vue-qr/src/packages/vue-qr.vue'
+import { Loading } from 'quasar'
+
 
 const cpf = ref<string>('')
 const showModal = ref<boolean>(false)
@@ -144,9 +146,43 @@ const masks = instance?.appContext.config.globalProperties?.$masks
 
 const qrData = computed(() => generateVcardsPessoaFisica(responseData.value))
 
+
+// Função debounce com tipos explícitos
+function debounce<T extends (...args: string[]) => void>(
+  func: T,
+  wait: number,
+): (...args: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+
+  return (...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout); // Limpa o timeout anterior
+    timeout = setTimeout(() => func(...args), wait); // Configura um novo timeout
+  };
+}
+
+// Versão debounced da função buscarCpf
+const buscarCpfDebounced = debounce(async (cpfInput: string) => {
+  Loading.show({ message: 'Buscando CPF...' }) // Exibe o spinner
+  try {
+    responseData.value = (await fetchPessoaFisicaByCpf(cpfInput)) ?? null;
+    showModal.value = true;
+  } catch (error) {
+    console.error('Erro ao buscar CPF:', error);
+  } finally {
+    Loading.hide() // Oculta o spinner
+  }
+}, 800); // 800ms de espera
+
 async function buscarCpf(cpfInput: string) {
-  responseData.value = (await fetchPessoaFisicaByCpf(cpfInput)) ?? null
-  showModal.value = true
+  Loading.show({ message: 'Buscando CPF...' }) // Exibe o spinner
+  try {
+    responseData.value = (await fetchPessoaFisicaByCpf(cpfInput)) ?? null
+    showModal.value = true
+  } catch (error) {
+    console.error('Erro ao buscar CPF:', error)
+  } finally {
+    Loading.hide() // Oculta o spinner
+  }
 }
 
 function formatarTelefone(contato: InformacaoContato, index: number) {
@@ -161,11 +197,32 @@ function formatarTelefone(contato: InformacaoContato, index: number) {
 
 function openEditDialog() {
   if (responseData.value) {
+    // Verifica se ListaInformacoesContato existe e não está vazia
+    const listaContatos = responseData.value.ListaInformacoesContato || []
+
+    // Verifica se há algum item na lista com CodComunic = 5
+    const existeTelefone = listaContatos.some((contato) => contato.CodComunic === 5)
+
+    // Se não houver nenhum item com CodComunic = 5, adiciona um novo item vazio
+    if (!existeTelefone) {
+      const novoContato = {
+        NumSeqCom: listaContatos.length + 1, // Valor padrão para NumSeqCom
+        CodComunic: 5, // Código para telefone
+        DescComunic: 'TELEFONE CELULAR', // Descrição padrão
+        Numero: '', // Campo vazio para o número de telefone
+        IndInternet: 0, // Valor padrão para IndInternet
+        RecebeContato: null, // Valor padrão para RecebeContato
+        RecebeSMS: null, // Valor padrão para RecebeSMS
+        Principal: null, // Valor padrão para Principal
+      }
+      listaContatos.push(novoContato)
+    }
+
     editData.value = {
       ...responseData.value,
       CgcCpf: String(responseData.value.CgcCpf || ''),
       ListaInformacoesContato: responseData.value.ListaInformacoesContato || [],
-    } 
+    }
     console.log(editData.value)
     showEditModal.value = true
   }
@@ -180,7 +237,8 @@ function saveEdit() {
 
 watch(cpf, (newCpf) => {
   if (masks) {
-    cpf.value = masks.cpf(newCpf) // Aplica a máscara de CPF
+    cpf.value = masks.cpf(newCpf)
   }
+  buscarCpfDebounced(newCpf)
 })
 </script>
