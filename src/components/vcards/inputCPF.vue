@@ -88,16 +88,6 @@
             class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
           />
         </div>
-
-        <div>
-          <label for="cpf-edit" class="block text-sm font-medium text-gray-600">CPF:</label>
-          <input
-            id="cpf-edit"
-            v-model="editData.CgcCpf"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-          />
-        </div>
-
         <div>
           <label for="contato" class="block text-sm font-medium text-gray-600">Contatos:</label>
           <ul class="mt-2 space-y-2" v-if="editData.ListaInformacoesContato">
