@@ -19,7 +19,7 @@ interface Endereco {
   Principal: number
 }
 
-interface InformacaoContato {
+export interface InformacaoContato {
   NumSeqCom: number
   CodComunic: number
   DescComunic: string

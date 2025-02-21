@@ -12,12 +12,12 @@
         class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
       />
       <div class="flex justify-center mt-4">
-          <button
-            @click="buscarCpf(cpf)"
-            class="bg-blue-500 text-white cursor-pointer font-semibold px-6 py-2 rounded-lg shadow hover:bg-blue-600 transition-colors duration-200"
-          >
-            Buscar
-          </button>
+        <button
+          @click="buscarCpf(cpf)"
+          class="bg-blue-500 text-white cursor-pointer font-semibold px-6 py-2 rounded-lg shadow hover:bg-blue-600 transition-colors duration-200"
+        >
+          Buscar
+        </button>
       </div>
     </div>
   </div>
@@ -63,43 +63,115 @@
       </q-card-section>
 
       <q-card-actions align="right" class="p-4 border-t border-gray-200">
+        <q-btn label="Editar meus dados" @click="openEditDialog" class="mr-2" />
         <q-btn label="Fechar" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="showEditModal">
+    <q-card class="max-w-lg w-full rounded-2xl shadow-lg bg-white">
+      <q-card-section class="border-b border-gray-200 p-6">
+        <div class="text-xl font-semibold text-gray-800">Editar Meus Dados</div>
+      </q-card-section>
+
+      <q-card-section class="p-6 space-y-4" v-if="editData">
+        <!-- Formulário de Edição -->
+        <div>
+          <label for="nome" class="block text-sm font-medium text-gray-600"
+            >Nome/Razão Social:</label
+          >
+          <input
+            id="nome"
+            placeholder="Nome"
+            v-model="editData.NomeRazaoSocial"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+          />
+        </div>
+
+        <div>
+          <label for="contato" class="block text-sm font-medium text-gray-600">Contatos:</label>
+          <ul class="mt-2 space-y-2" v-if="editData.ListaInformacoesContato">
+            <li
+              v-for="(contato, index) in editData.ListaInformacoesContato"
+              :key="index"
+              placeholder="Digite seu e-mail"
+              class="text-base text-gray-700 flex items-center gap-2"
+            >
+              <input
+                v-model="contato.Numero"
+                placeholder="(99) 99999-9999"
+                @input="formatarTelefone(contato, index)"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              />
+            </li>
+          </ul>
+        </div>
+      </q-card-section>
+
+      <q-card-actions align="right" class="p-4 border-t border-gray-200">
+        <q-btn label="Salvar" @click="saveEdit" class="mr-2" />
+        <q-btn label="Cancelar" v-close-popup />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, getCurrentInstance } from 'vue'
+import { ref, computed, watch, getCurrentInstance } from 'vue'
 import { fetchPessoaFisicaByCpf } from 'src/services/api'
 import { generateVcardsPessoaFisica } from 'src/services/vCards'
-import type { PessoaFisicaDTO } from '../pessoaFisica'
+import type { PessoaFisicaDTO, InformacaoContato } from '../pessoaFisica'
 import vueQr from 'vue-qr/src/packages/vue-qr.vue'
+
+const cpf = ref<string>('')
+const showModal = ref<boolean>(false)
+const showEditModal = ref<boolean>(false)
+const responseData = ref<PessoaFisicaDTO | null>(null)
+const editData = ref<PessoaFisicaDTO | null>(null)
 
 const instance = getCurrentInstance()
 const masks = instance?.appContext.config.globalProperties?.$masks
-const cpf = ref<string>('')
-const showModal = ref<boolean>(false)
-const responseData = ref<PessoaFisicaDTO | null>(null)
 
 const qrData = computed(() => generateVcardsPessoaFisica(responseData.value))
 
-
-async function buscarCpf(cpfInput: string){
-  responseData.value = await fetchPessoaFisicaByCpf(cpfInput) ?? null
+async function buscarCpf(cpfInput: string) {
+  responseData.value = (await fetchPessoaFisicaByCpf(cpfInput)) ?? null
   showModal.value = true
 }
 
-watch(cpf, async (newCpf) => {
-  if (masks) {
-    cpf.value = masks.cpf(newCpf)
+function formatarTelefone(contato: InformacaoContato, index: number) {
+  if (!editData.value || !editData.value.ListaInformacoesContato) return;
 
-    if(cpf.value.length == 14){
-      await buscarCpf(newCpf)
-    }
+  const lista = editData.value.ListaInformacoesContato;
 
-    
+  if (masks && contato.CodComunic === 5 && lista[index]) {
+    lista[index].Numero = masks.phoneBR(contato.Numero);
   }
+}
 
+
+
+function openEditDialog() {
+  if (responseData.value) {
+    editData.value = {
+      ...responseData.value,
+      ListaInformacoesContato: responseData.value.ListaInformacoesContato || [],
+    }
+    showEditModal.value = true
+  }
+}
+
+function saveEdit() {
+  if (editData.value) {
+    responseData.value = editData.value
+    showEditModal.value = false
+  }
+}
+
+watch(cpf, (newCpf) => {
+  if (masks) {
+    cpf.value = masks.cpf(newCpf) // Aplica a máscara de CPF
+  }
 })
 </script>
