@@ -31,7 +31,7 @@ export interface InformacaoContato {
 }
 
 interface Vinculo {
-  CgcCpf: number
+  CgcCpf: string
   CodContatoPJ: number
   NomeRazaoSocialPJ: string
   CodCargCli: number
@@ -48,7 +48,7 @@ export interface PessoaFisicaDTO {
   CodSebrae: number
   DescSebrae: string
   CodParceiro: number
-  CgcCpf: number
+  CgcCpf: string
   NomeRazaoSocial: string
   NomeAbrevFantasia: string
   Genero: number

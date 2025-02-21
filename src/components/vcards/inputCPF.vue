@@ -90,6 +90,15 @@
         </div>
 
         <div>
+          <label for="cpf-edit" class="block text-sm font-medium text-gray-600">CPF:</label>
+          <input
+            id="cpf-edit"
+            v-model="editData.CgcCpf"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+          />
+        </div>
+
+        <div>
           <label for="contato" class="block text-sm font-medium text-gray-600">Contatos:</label>
           <ul class="mt-2 space-y-2" v-if="editData.ListaInformacoesContato">
             <li
@@ -141,23 +150,23 @@ async function buscarCpf(cpfInput: string) {
 }
 
 function formatarTelefone(contato: InformacaoContato, index: number) {
-  if (!editData.value || !editData.value.ListaInformacoesContato) return;
+  if (!editData.value || !editData.value.ListaInformacoesContato) return
 
-  const lista = editData.value.ListaInformacoesContato;
+  const lista = editData.value.ListaInformacoesContato
 
   if (masks && contato.CodComunic === 5 && lista[index]) {
-    lista[index].Numero = masks.phoneBR(contato.Numero);
+    lista[index].Numero = masks.phoneBR(contato.Numero)
   }
 }
-
-
 
 function openEditDialog() {
   if (responseData.value) {
     editData.value = {
       ...responseData.value,
+      CgcCpf: String(responseData.value.CgcCpf || ''),
       ListaInformacoesContato: responseData.value.ListaInformacoesContato || [],
-    }
+    } 
+    console.log(editData.value)
     showEditModal.value = true
   }
 }
